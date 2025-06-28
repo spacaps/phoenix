@@ -25,12 +25,15 @@ import fr.acinq.phoenix.PhoenixGlobal
 import fr.acinq.phoenix.android.utils.Logging
 import fr.acinq.phoenix.android.utils.SystemNotificationHelper
 import fr.acinq.phoenix.android.utils.datastore.GlobalPrefs
+import fr.acinq.phoenix.android.utils.datastore.TrustedAppsRepository
 import fr.acinq.phoenix.utils.PlatformContext
 import org.slf4j.LoggerFactory
 
 
 /** This datastore persists preferences across node ids. */
 val Context.globalPrefs: DataStore<Preferences> by preferencesDataStore(name = "globalprefs")
+val Context.trustedApps: DataStore<Preferences> by preferencesDataStore(name = "trustedApps")
+
 
 class PhoenixApplication : Application() {
 
@@ -38,6 +41,7 @@ class PhoenixApplication : Application() {
 
     lateinit var globalPrefs: GlobalPrefs
     lateinit var phoenixGlobal: PhoenixGlobal
+    lateinit var trustedAppsRepo: TrustedAppsRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -45,6 +49,7 @@ class PhoenixApplication : Application() {
 
         phoenixGlobal = PhoenixGlobal(PlatformContext(applicationContext))
         globalPrefs = GlobalPrefs(applicationContext.globalPrefs)
+        trustedAppsRepo = TrustedAppsRepository(applicationContext.trustedApps)
         BusinessManager.initialize(applicationContext)
 
         log.info("creating app")

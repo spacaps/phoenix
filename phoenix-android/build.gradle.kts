@@ -6,6 +6,7 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlinx-serialization")
     alias(libs.plugins.compose)
+    id("kotlin-parcelize")
 }
 
 fun gitCommitHash(): String {
@@ -29,6 +30,12 @@ android {
         versionCode = 114
         versionName = gitCommitHash()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        getByName("main") {
+            aidl.srcDirs("src/main/aidl")
+        }
     }
 
     buildTypes {
@@ -76,6 +83,7 @@ android {
         viewBinding = true
         dataBinding = true
         buildConfig = true
+        aidl = true
     }
 
     androidResources {

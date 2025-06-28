@@ -37,6 +37,13 @@
     <string name="notification_swap_timeout_title">Swap timeout</string>
     <string name="notification_swap_timeout_desc">Tells you when a swap is going to timeout.</string>
 
+    <!-- trusted IPC strings -->
+
+    <string name="trusted_ipc_channel_name">Phoenix IPC</string>
+    <string name="trusted_ipc_channel_description">Background service for trusted-app payments</string>
+    <string name="trusted_ipc_notif_title">Phoenix IPC (idle)</string>
+    <string name="trusted_ipc_notif_text">Ready for trusted-app requests</string>
+
     <!-- init wallet / automated wallet creation -->
 
     <string name="autocreate_generating">Creating your wallet…</string>
@@ -566,6 +573,21 @@
     <string name="contact_photo_open_camera">Take a photo</string>
     <string name="contact_photo_open_gallery">Browse images</string>
     <string name="contact_photo_remove">Delete picture</string>
+
+    <!-- settings: trusted apps -->
+    <string name="trusted_apps_title">Trusted Apps</string>
+    <string name="trusted_apps_service_running">Background service is running</string>
+    <string name="trusted_apps_service_stopped">Background service is stopped</string>
+    <string name="trusted_apps_service_start_button">Start service</string>
+    <string name="trusted_apps_service_stop_button">Stop service</string>
+    <string name="trusted_apps_list_header">Apps allowed to spend</string>
+    <string name="trusted_apps_empty">No apps have been trusted yet</string>
+    <string name="trusted_apps_item_subtitle">Tap to view / edit limits</string>
+    <string name="trusted_apps_dialog_header">Allow <span>%1$s</span> to spend sats?</string>
+    <string name="trusted_apps_dialog_msg">You can revoke or change the limit later in Settings → Trusted Apps.</string>
+    <string name="trusted_apps_dialog_allow">Allow</string>
+    <string name="trusted_apps_dialog_deny">Deny</string>
+    <string name="trusted_apps_limit_exceeded">Daily limit reached</string>
 
     <!-- settings: access control -->
 

@@ -44,6 +44,7 @@ import fr.acinq.phoenix.android.settings.reset.ResetWallet
 import fr.acinq.phoenix.android.settings.SettingsContactsView
 import fr.acinq.phoenix.android.settings.SettingsView
 import fr.acinq.phoenix.android.settings.TorConfigView
+import fr.acinq.phoenix.android.settings.TrustedAppsView
 import fr.acinq.phoenix.android.settings.displayseed.DisplaySeedView
 import fr.acinq.phoenix.android.settings.electrum.ElectrumView
 import fr.acinq.phoenix.android.settings.fees.AdvancedIncomingFeePolicy
@@ -74,6 +75,12 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController, appViewModel:
 
     businessComposable(Screen.BusinessNavGraph.DisplayPrefs.route, appViewModel) { _, walletId, business ->
         DisplayPrefsView(walletId = walletId, business = business, onBackClick = { navController.popBackStack() })
+    }
+
+    businessComposable( Screen.BusinessNavGraph.TrustedApps.route, appViewModel) {_, _, _ ->
+        TrustedAppsView(
+            onBackClick = { navController.popBackStack() }
+            )
     }
 
     businessComposable(Screen.BusinessNavGraph.About.route, appViewModel) { _, _, _ ->

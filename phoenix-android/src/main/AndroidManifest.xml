@@ -20,9 +20,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <permission android:name="org.lightning.permission.BIND_PAYMENT_IPC"
+        android:protectionLevel="normal"/>
     <application
         android:name=".PhoenixApplication"
         android:allowBackup="false"
@@ -96,6 +99,19 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="fr.acinq.phoenix.android.services.TrustedIpcService"
+            android:exported="true"
+            android:foregroundServiceType="dataSync"
+            android:permission="org.lightning.permission.BIND_PAYMENT_IPC">
+
+            <intent-filter>
+                <action android:name="org.lightning.action.BIND_PAYMENT_IPC" />
+            </intent-filter>
+        </service>
+
+
 
         <!-- node service -->
         <service

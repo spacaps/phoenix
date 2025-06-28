@@ -47,6 +47,7 @@ sealed class Screen(val route: String) {
         data object MutualClose : Screen("settings/mutualclose")
         data object ForceClose : Screen("settings/forceclose")
         data object DisplayPrefs : Screen("settings/displayPrefs")
+        data object TrustedApps : Screen("settings/trustedapps")
         data object About : Screen("settings/about")
         data object AppAccess : Screen("settings/appaccess")
         data object PaymentSettings : Screen("settings/paymentsettings")

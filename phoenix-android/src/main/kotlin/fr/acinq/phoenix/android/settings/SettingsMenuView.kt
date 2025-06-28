@@ -133,6 +133,7 @@ fun SettingsView(
             MenuButton(text = stringResource(R.string.settings_list_channels), icon = R.drawable.ic_zap, onClick = { nc.navigate(Screen.BusinessNavGraph.Channels.route) })
             MenuButton(text = stringResource(R.string.experimental_title), icon = R.drawable.ic_experimental, onClick = { nc.navigate(Screen.BusinessNavGraph.Experimental.route) })
             MenuButton(text = stringResource(R.string.settings_logs), icon = R.drawable.ic_text, onClick = { nc.navigate(Screen.BusinessNavGraph.Logs.route) })
+            MenuButton(text = stringResource(R.string.settings_trusted_apps), icon = R.drawable.ic_chain, onClick = { nc.navigate(Screen.BusinessNavGraph.TrustedApps.route) })
         }
         // -- advanced
         CardHeader(text = stringResource(id = R.string.settings_danger_title))
