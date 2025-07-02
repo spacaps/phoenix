@@ -1,89 +1,75 @@
-/*
- * TrustedAppsView – lists stored IPC messages and lets the user:
- *   • start / stop TrustedIpcService (foreground)
- *   • send a demo “persist message” call via Binder
- *
- * Place in: app/src/main/java/fr/acinq/phoenix/android/settings
- */
-
 package fr.acinq.phoenix.android.settings
 
 import android.content.*
 import android.os.IBinder
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import org.lightning.ITrustedPaymentIpcV1
 import fr.acinq.phoenix.android.PhoenixApplication
 import fr.acinq.phoenix.android.R
-import fr.acinq.phoenix.android.components.Card
-import fr.acinq.phoenix.android.components.DefaultScreenHeader
-import fr.acinq.phoenix.android.components.DefaultScreenLayout
-import fr.acinq.phoenix.android.components.PhoenixIcon
+import fr.acinq.phoenix.android.components.*
 import fr.acinq.phoenix.android.components.settings.Setting
 import fr.acinq.phoenix.android.services.TrustedIpcService
 import fr.acinq.phoenix.android.utils.negativeColor
 import fr.acinq.phoenix.android.utils.positiveColor
 import kotlinx.coroutines.delay
+import org.lightning.ITrustedPaymentIpcV1
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
-/* --------------------------------------------------------- */
 
 @Composable
 fun TrustedAppsView(onBackClick: () -> Unit) {
 
     val ctx = LocalContext.current
     val serviceRunning by rememberIpcRunning()
+    val scope = rememberCoroutineScope()
 
-    /* Repository with DataStore-backed messages */
     val repo = (ctx.applicationContext as PhoenixApplication).trustedAppsRepo
     val messages by repo.messages.collectAsState(initial = emptyList())
 
-    /* Binder reference (null until bound) */
     var binder by remember { mutableStateOf<ITrustedPaymentIpcV1?>(null) }
+    var connection by remember { mutableStateOf<ServiceConnection?>(null) }
 
     DisposableEffect(serviceRunning) {
-        var conn: ServiceConnection? = null
-        if (serviceRunning) {
-            conn = object : ServiceConnection {
+        if (serviceRunning && connection == null) {
+            connection = object : ServiceConnection {
                 override fun onServiceConnected(c: ComponentName?, ib: IBinder?) {
                     binder = ITrustedPaymentIpcV1.Stub.asInterface(ib)
                 }
                 override fun onServiceDisconnected(c: ComponentName?) {
                     binder = null
                 }
+            }.also { conn ->
+                ctx.bindService(
+                    Intent(ctx, TrustedIpcService::class.java),
+                    conn,
+                    Context.BIND_AUTO_CREATE
+                )
             }
-            ctx.bindService(
-                Intent(ctx, TrustedIpcService::class.java),
-                conn,
-                Context.BIND_AUTO_CREATE
-            )
         }
         onDispose {
-            conn?.let { runCatching { ctx.unbindService(it) } }
+            connection?.let { runCatching { ctx.unbindService(it) } }
+            connection = null
             binder = null
         }
     }
 
     DefaultScreenLayout {
 
-        /* header */
         DefaultScreenHeader(
             onBackClick = onBackClick,
             title = stringResource(R.string.trusted_apps_title)
         )
 
-        /* description */
         Card(Modifier.padding(16.dp)) {
-            Text(text = stringResource(R.string.trusted_apps_list_header))
+            Text(stringResource(R.string.trusted_apps_list_header))
         }
 
-        /* start / stop toggle */
         Card {
             Setting(
                 title = if (serviceRunning)
@@ -107,15 +93,23 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
                     )
                 },
                 onClick = {
-                    if (serviceRunning) TrustedIpcService.stop(ctx)
-                    else TrustedIpcService.start(ctx)
+                    if (serviceRunning) {
+                        connection?.let {
+                            runCatching { ctx.unbindService(it) }
+                            connection = null
+                            binder = null
+                        }
+                        TrustedIpcService.disableComponent(ctx)   // no more new connections
+                    } else {
+                        TrustedIpcService.enableComponent(ctx)
+                        TrustedIpcService.start(ctx)
+                    }
                 }
             )
         }
 
         Spacer(Modifier.height(8.dp))
 
-        /* demo “persist message” action (enabled only when bound) */
         Card {
             Setting(
                 title = "Add test message",
@@ -127,9 +121,21 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
             )
         }
 
+        if (messages.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Card {
+                Setting(
+                    title = "Clear log",
+                    leadingIcon = { PhoenixIcon(R.drawable.ic_trash) },
+                    onClick = {                     
+                        scope.launch { repo.clearMessages() }
+                    }
+                )
+            }
+        }
+
         Spacer(Modifier.height(8.dp))
 
-        /* list of stored messages */
         Card {
             if (messages.isEmpty()) {
                 Setting(
@@ -151,12 +157,10 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
     }
 }
 
-/* -------- helper: poll running-services list -------- */
-
 @Composable
 fun rememberIpcRunning(): State<Boolean> {
     val ctx = LocalContext.current.applicationContext
-    return produceState(false) {
+    return produceState(initialValue = false) {
         while (true) {
             value = isServiceRunning(ctx)
             delay(1_000)
