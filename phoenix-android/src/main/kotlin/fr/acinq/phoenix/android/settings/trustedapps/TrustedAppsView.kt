@@ -1,4 +1,4 @@
-package fr.acinq.phoenix.android.settings
+package fr.acinq.phoenix.android.settings.trustedapps
 
 import android.content.*
 import android.os.IBinder
@@ -17,7 +17,7 @@ import fr.acinq.phoenix.android.services.TrustedIpcService
 import fr.acinq.phoenix.android.utils.negativeColor
 import fr.acinq.phoenix.android.utils.positiveColor
 import kotlinx.coroutines.delay
-import org.lightning.ITrustedPaymentIpcV1
+import org.androidln.IQuickPayV1
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 
@@ -31,15 +31,16 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
 
     val repo = (ctx.applicationContext as PhoenixApplication).trustedAppsRepo
     val messages by repo.messages.collectAsState(initial = emptyList())
+    val grants by repo.grantsFlow.collectAsState(initial = emptyMap())
 
-    var binder by remember { mutableStateOf<ITrustedPaymentIpcV1?>(null) }
+    var binder by remember { mutableStateOf<IQuickPayV1?>(null) }
     var connection by remember { mutableStateOf<ServiceConnection?>(null) }
 
     DisposableEffect(serviceRunning) {
         if (serviceRunning && connection == null) {
             connection = object : ServiceConnection {
                 override fun onServiceConnected(c: ComponentName?, ib: IBinder?) {
-                    binder = ITrustedPaymentIpcV1.Stub.asInterface(ib)
+                    binder = IQuickPayV1.Stub.asInterface(ib)
                 }
                 override fun onServiceDisconnected(c: ComponentName?) {
                     binder = null
@@ -82,16 +83,6 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
                         tint = if (serviceRunning) positiveColor else negativeColor
                     )
                 },
-                trailingIcon = {
-                    Text(
-                        stringResource(
-                            if (serviceRunning)
-                                R.string.trusted_apps_service_stop_button
-                            else
-                                R.string.trusted_apps_service_start_button
-                        )
-                    )
-                },
                 onClick = {
                     if (serviceRunning) {
                         connection?.let {
@@ -127,7 +118,7 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
                 Setting(
                     title = "Clear log",
                     leadingIcon = { PhoenixIcon(R.drawable.ic_trash) },
-                    onClick = {                     
+                    onClick = {
                         scope.launch { repo.clearMessages() }
                     }
                 )
@@ -154,6 +145,9 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
                 }
             }
         }
+        Spacer(Modifier.height(8.dp))
+
+        TrustedGrantsView(grants = grants, repo = repo)
     }
 }
 

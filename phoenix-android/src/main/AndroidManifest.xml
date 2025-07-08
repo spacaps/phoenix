@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <permission android:name="org.lightning.permission.BIND_PAYMENT_IPC"
+    <permission android:name="org.androidln.permission.BIND_PAYMENT_IPC"
         android:protectionLevel="normal"/>
     <application
         android:name=".PhoenixApplication"
@@ -100,14 +100,24 @@
             </intent-filter>
         </service>
 
+        <activity
+            android:name=".quickpay.QuickPayPairingActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PhoenixAndroid">
+            <intent-filter>
+                <action android:name="org.androidln.action.SETUP_TRUST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name="fr.acinq.phoenix.android.services.TrustedIpcService"
             android:exported="true"
             android:foregroundServiceType="dataSync"
-            android:permission="org.lightning.permission.BIND_PAYMENT_IPC">
+            android:permission="org.androidln.permission.BIND_PAYMENT_IPC">
 
             <intent-filter>
-                <action android:name="org.lightning.action.BIND_PAYMENT_IPC" />
+                <action android:name="org.androidln.action.BIND_PAYMENT_IPC" />
             </intent-filter>
         </service>
 
