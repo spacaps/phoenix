@@ -19,6 +19,9 @@ import fr.acinq.phoenix.android.utils.positiveColor
 import kotlinx.coroutines.delay
 import org.androidln.IQuickPayV1
 import androidx.compose.runtime.rememberCoroutineScope
+import fr.acinq.phoenix.android.components.layouts.Card
+import fr.acinq.phoenix.android.components.layouts.DefaultScreenHeader
+import fr.acinq.phoenix.android.components.layouts.DefaultScreenLayout
 import kotlinx.coroutines.launch
 
 
@@ -117,7 +120,7 @@ fun TrustedAppsView(onBackClick: () -> Unit) {
             Card {
                 Setting(
                     title = "Clear log",
-                    leadingIcon = { PhoenixIcon(R.drawable.ic_trash) },
+                    leadingIcon = { PhoenixIcon(R.drawable.ic_delete) },
                     onClick = {
                         scope.launch { repo.clearMessages() }
                     }

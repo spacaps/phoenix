@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import fr.acinq.phoenix.android.BusinessManager
 import fr.acinq.phoenix.android.PhoenixApplication
 import fr.acinq.phoenix.android.R
 import fr.acinq.phoenix.android.utils.datastore.TrustedAppsRepository
@@ -18,7 +19,6 @@ import fr.acinq.phoenix.managers.SendManager
 import kotlinx.coroutines.*
 import org.androidln.IQuickPayV1
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.filterNotNull
 import java.security.MessageDigest
@@ -72,10 +72,17 @@ class TrustedIpcService : Service() {
                 }
 
                 /* 3) Parse invoice to obtain exact amount (sats) */
-                val phoenix = (applicationContext as PhoenixApplication)
-                val business = phoenix.business.filterNotNull().first()
+                val business = BusinessManager.businessFlow
+                    .first { it.isNotEmpty() }
+                    .values
+                    .first()
+                    .business
 
-                val parseResult = business.sendManager.parse(invoice) {}
+                val parseResult = business.sendManager.parse(
+                    request = invoice,
+                    progress = {}
+                )
+
                 val bolt = (parseResult as? SendManager.ParseResult.Bolt11Invoice) ?: run {
                     repo.addMessage("[DENY $callerPkg] invalid-invoice")
                     return@launch
@@ -89,8 +96,8 @@ class TrustedIpcService : Service() {
                 /* 4)TODO Check / consume daily allowance */
 
                 /* 5) Trampoline fees (required to send) */
-                val trampolineFees = business.peerManager.peerState
-                    .value?.walletParams?.trampolineFees?.firstOrNull()
+                val peerState = business.peerManager.peerState.filterNotNull().first()
+                val trampolineFees = peerState.walletParams?.trampolineFees?.firstOrNull()
 
                 if (trampolineFees == null) {
                     repo.addMessage("[DENY $callerPkg] trampoline-fees-missing")

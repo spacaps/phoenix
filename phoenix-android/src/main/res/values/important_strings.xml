@@ -70,12 +70,8 @@
     <string name="settings_list_channels">Payment channels</string>
     <string name="settings_logs">Logs</string>
     <string name="settings_electrum">Electrum server</string>
-<<<<<<< HEAD
     <string name="settings_reset_wallet">Delete wallet</string>
-=======
     <string name="settings_trusted_apps" translatable="false">Trusted Apps</string>
-    <string name="settings_reset_wallet">Reset wallet</string>
->>>>>>> 9eccc235 (jjinit)
     <string name="settings_mutual_close">Close channels</string>
     <string name="settings_force_close">Force-close channels</string>
     <string name="settings_tor">Tor</string>

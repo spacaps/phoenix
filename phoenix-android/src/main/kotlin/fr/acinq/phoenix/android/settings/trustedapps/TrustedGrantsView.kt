@@ -5,11 +5,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.acinq.phoenix.android.R
-import fr.acinq.phoenix.android.components.Card
 import fr.acinq.phoenix.android.components.PhoenixIcon
+import fr.acinq.phoenix.android.components.layouts.Card
 import fr.acinq.phoenix.android.components.settings.Setting
 import fr.acinq.phoenix.android.utils.datastore.TrustedAppsRepository
 import kotlinx.coroutines.launch

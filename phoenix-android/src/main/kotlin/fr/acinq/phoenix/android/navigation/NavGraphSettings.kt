@@ -40,15 +40,15 @@ import fr.acinq.phoenix.android.settings.ForceCloseView
 import fr.acinq.phoenix.android.settings.LogsView
 import fr.acinq.phoenix.android.settings.NotificationsView
 import fr.acinq.phoenix.android.settings.PaymentSettingsView
-import fr.acinq.phoenix.android.settings.reset.ResetWallet
 import fr.acinq.phoenix.android.settings.SettingsContactsView
 import fr.acinq.phoenix.android.settings.SettingsView
 import fr.acinq.phoenix.android.settings.TorConfigView
-import fr.acinq.phoenix.android.settings.TrustedAppsView
 import fr.acinq.phoenix.android.settings.displayseed.DisplaySeedView
 import fr.acinq.phoenix.android.settings.electrum.ElectrumView
 import fr.acinq.phoenix.android.settings.fees.AdvancedIncomingFeePolicy
 import fr.acinq.phoenix.android.settings.fees.LiquidityPolicyView
+import fr.acinq.phoenix.android.settings.reset.ResetWallet
+import fr.acinq.phoenix.android.settings.trustedapps.TrustedAppsView
 
 
 fun NavGraphBuilder.settingsNavGraph(navController: NavController, appViewModel: AppViewModel) {
